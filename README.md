@@ -49,6 +49,10 @@ Port 3000 in the host computer is forwarded to port 3000 in the virtual machine.
 
 * Node.js for the asset pipeline
 
+* OpenJRE 1.7
+
+* Phantom.js
+
 * Memcached
 
 ## Recommended Workflow
