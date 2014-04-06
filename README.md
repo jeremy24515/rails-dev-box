@@ -8,7 +8,7 @@ This project automates the setup of a development environment for working on Rub
 
 ## Requirements
 
-* [VirtualBox](https://www.virtualbox.org)
+* [VirtualBox](https://www.virtualbox.org) or [VMWare Fusion](http://www.vmware.com/products/fusion)
 
 * [Vagrant 1.1+](http://vagrantup.com) (not a Ruby gem)
 
@@ -21,6 +21,8 @@ Building the virtual machine is this easy:
     host $ vagrant up
 
 That's it.
+
+(If you want to use VMWare Fusion instead of VirtualBox, write `vagrant up --provider=vmware_fusion` instead of `vagrant up` when building the VM for the first time. After that, Vagrant will remember your provider choice, and you won't need to include the `provider` flag again.)
 
 If the base box is not present that command fetches it first. The setup itself takes about 3 minutes in my MacBook Air. After the installation has finished, you can access the virtual machine with
 
@@ -115,12 +117,36 @@ Please check the [Vagrant documentation](http://docs.vagrantup.com/v2/) for more
 
 ## Faster Rails test suites
 
+The default mechanism for sharing folders is convenient and works out the box in
+all Vagrant versions, but there are a couple of alternatives that are more
+performant.
+
+### rsync
+
+Vagrant 1.5 implements a [sharing mechanism based on rsync](https://www.vagrantup.com/blog/feature-preview-vagrant-1-5-rsync.html)
+that dramatically improves read/write because files are actually stored in the
+guest. Just throw
+
+    config.vm.synced_folder '.', '/vagrant', type: 'rsync'
+
+to the _Vagrantfile_ and either rsync manually with
+
+    vagrant rsync
+
+or run
+
+    vagrant rsync-auto
+
+for automatic syncs. See the post linked above for details.
+
+### NFS
+
 If you're using Mac OS X or Linux you can increase the speed of Rails test suites with Vagrant's NFS synced folders.
 
 With a NFS server installed (already installed on Mac OS X), add the following to the Vagrantfile:
 
-    config.vm.synced_folder ".", "/vagrant", type: "nfs"
-    config.vm.network "private_network", ip: "192.168.50.4" # ensure this is available
+    config.vm.synced_folder '.', '/vagrant', type: 'nfs'
+    config.vm.network 'private_network', ip: '192.168.50.4' # ensure this is available
 
 Then
 
