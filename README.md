@@ -16,7 +16,7 @@ This project automates the setup of a development environment for working on Rub
 
 Building the virtual machine is this easy:
 
-    host $ git clone https://github.com/polopi/rails-dev-box.git
+    host $ git clone --recursive https://github.com/polopi/rails-dev-box.git
     host $ cd rails-dev-box
     host $ vagrant up
 
