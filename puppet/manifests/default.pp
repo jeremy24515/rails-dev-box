@@ -204,17 +204,24 @@ class { 'must-have':}
 
 # ---- REDIS ---------------------------------------------------------------------
 class redis {
-  
+
   package { 'redis-server':
     ensure => installed
   }
-  
+
   service { 'redis-server':
     ensure => "running",
     require => Package["redis-server"],
   }
 }
 class {'redis':}
+
+# ---- NodeJS & NPM ------------------------------------------------------------
+exec {
+  "npm-change-reg":
+  command => "${as_vagrant} 'npm config set registry http://registry.npmjs.org/'",
+  require => Package["npm"],
+}
 
 # --- Locale -------------------------------------------------------------------
 
