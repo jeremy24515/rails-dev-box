@@ -125,6 +125,11 @@ package { 'nodejs':
   ensure => installed
 }
 
+# NPM
+package { 'npm':
+  ensure => installed
+}
+
 # --- Ruby ---------------------------------------------------------------------
 
 exec { 'install_rvm':
