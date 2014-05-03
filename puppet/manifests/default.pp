@@ -197,6 +197,20 @@ class must-have {
 }
 class { 'must-have':}
 
+# ---- REDIS ---------------------------------------------------------------------
+class redis {
+  
+  package { 'redis-server':
+    ensure => installed
+  }
+  
+  service { 'redis-server':
+    ensure => "running",
+    require => Package["redis-server"],
+  }
+}
+class {'redis':}
+
 # --- Locale -------------------------------------------------------------------
 
 # Needed for docs generation.
