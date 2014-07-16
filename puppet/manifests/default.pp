@@ -120,16 +120,6 @@ package { ['libxml2', 'libxml2-dev', 'libxslt1-dev']:
   ensure => installed
 }
 
-# ExecJS runtime.
-package { 'nodejs':
-  ensure => installed
-}
-
-# NPM
-package { 'npm':
-  ensure => installed
-}
-
 # --- Ruby ---------------------------------------------------------------------
 
 exec { 'install_rvm':
@@ -217,6 +207,27 @@ class redis {
 class {'redis':}
 
 # ---- NodeJS & NPM ------------------------------------------------------------
+class nodejs {
+  include apt
+  apt::ppa { "ppa:chris-lea/node.js": }
+
+  exec { 'apt-get update 3':
+    command => '/usr/bin/apt-get update',
+    require => Apt::Ppa["ppa:chris-lea/node.js"],
+  }
+
+  package { "nodejs":
+    ensure => '0.10.29-1chl1~precise1',
+    require => Exec["apt-get update 3"],
+  }
+
+  # NPM
+  package { 'npm':
+    ensure => installed
+  }
+}
+class {'nodejs':}
+
 exec {
   "npm-change-reg":
   command => "${as_vagrant} 'npm config set registry http://registry.npmjs.org/'",
