@@ -49,7 +49,7 @@ Port 3000 in the host computer is forwarded to port 3000 in the virtual machine.
 
 * Databases and users needed to run the Active Record test suite
 
-* Node.js for the asset pipeline
+* Node.js 0.10.29 for realtime communication
 
 * OpenJRE 1.7
 
