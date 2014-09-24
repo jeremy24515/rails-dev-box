@@ -208,31 +208,36 @@ class {'redis':}
 
 # ---- NodeJS & NPM ------------------------------------------------------------
 class nodejs {
-  include apt
-  apt::ppa { "ppa:chris-lea/node.js": }
 
-  exec { 'apt-get update 3':
-    command => '/usr/bin/apt-get update',
-    require => Apt::Ppa["ppa:chris-lea/node.js"],
-  }
+  $version='0.10.29'
 
-  package { "nodejs":
-    ensure => '0.10.29-1chl1~precise1',
-    require => Exec["apt-get update 3"],
-  }
+	exec { 'install_nvm':
+		command => '/usr/bin/curl https://raw.github.com/creationix/nvm/master/install.sh | /bin/sh',
+		creates => '/home/vagrant/.nvm',
+		user => 'vagrant',
+		environment => 'HOME=/home/vagrant',
+		require => Package['curl']
+	}
+ 
+	exec { 'install_nodejs':
+		command => '/bin/bash -c "source /home/vagrant/.nvm/nvm.sh && nvm install ${version} && nvm alias default ${version}"',
+		user => 'vagrant',
+		creates => '/home/vagrant/.nvm/v${version}',
+		environment => 'HOME=/home/vagrant',
+		require => Exec['install_nvm']
+	}
 
-  # NPM
-  package { 'npm':
-    ensure => installed
-  }
+  # change registry en http, sinon erreur
+	exec { "npm-change-reg":
+	  command => "/home/vagrant/.nvm/v0.10.29/bin/npm config set registry http://registry.npmjs.org/",
+	  user => 'vagrant',
+	  environment => 'HOME=/home/vagrant',
+	  require => Exec["install_nodejs"],
+	  logoutput => true,
+	}
+
 }
 class {'nodejs':}
-
-exec {
-  "npm-change-reg":
-  command => "${as_vagrant} 'npm config set registry http://registry.npmjs.org/'",
-  require => Package["npm"],
-}
 
 # --- Locale -------------------------------------------------------------------
 
