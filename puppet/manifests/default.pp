@@ -209,32 +209,31 @@ class {'redis':}
 # ---- NodeJS & NPM ------------------------------------------------------------
 class nodejs {
 
-  $version='0.10.29'
+  $nvm_version = "v0.17.0"
 
-	exec { 'install_nvm':
-		command => '/usr/bin/curl https://raw.github.com/creationix/nvm/master/install.sh | /bin/sh',
-		creates => '/home/vagrant/.nvm',
-		user => 'vagrant',
-		environment => 'HOME=/home/vagrant',
-		require => Package['curl']
-	}
+  $node_version = "v0.10.29"
+
+  exec { 'install_nvm':
+    command => "${as_vagrant} 'curl https://raw.githubusercontent.com/creationix/nvm/${nvm_version}/install.sh | bash'",
+    creates => "/home/vagrant/.nvm",
+    require => Package['curl'],
+    logoutput => true,
+  }
  
-	exec { 'install_nodejs':
-		command => '/bin/bash -c "source /home/vagrant/.nvm/nvm.sh && nvm install ${version} && nvm alias default ${version}"',
-		user => 'vagrant',
-		creates => '/home/vagrant/.nvm/v${version}',
-		environment => 'HOME=/home/vagrant',
-		require => Exec['install_nvm']
-	}
+  exec { 'install_nodejs':
+    command => "${as_vagrant} 'source /home/vagrant/.nvm/nvm.sh && nvm install ${node_version} && nvm alias default ${node_version}'",
+    creates => "/home/vagrant/.nvm/${node_version}",
+    require => Exec['install_nvm'],
+    logoutput => true,
+  }
 
   # change registry en http, sinon erreur
-	exec { "npm-change-reg":
-	  command => "/home/vagrant/.nvm/v0.10.29/bin/npm config set registry http://registry.npmjs.org/",
-	  user => 'vagrant',
-	  environment => 'HOME=/home/vagrant',
-	  require => Exec["install_nodejs"],
-	  logoutput => true,
-	}
+  exec { "npm-change-reg":
+    command => "${as_vagrant} '/home/vagrant/.nvm/${node_version}/bin/npm config set registry http://registry.npmjs.org/'",
+    require => Exec["install_nodejs"],
+    unless => "/home/vagrant/.nvm/${node_version}/bin/npm config get registry | grep http://registry.npmjs.org/",
+    logoutput => true,
+  }
 
 }
 class {'nodejs':}
