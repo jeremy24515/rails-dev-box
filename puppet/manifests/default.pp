@@ -86,6 +86,18 @@ class install_postgres {
     require   => Class['postgresql::server']
   }
 
+  pg_user { 'dev':
+    ensure => present,
+    password => 'dev',
+    createdb => true,
+  }
+
+  pg_user { 'test':
+    ensure => present,
+    password => 'test',
+    createdb => true,
+  }
+
   package { 'libpq-dev':
     ensure => installed
   }
@@ -219,7 +231,7 @@ class nodejs {
     require => Package['curl'],
     logoutput => true,
   }
- 
+
   exec { 'install_nodejs':
     command => "${as_vagrant} 'source /home/vagrant/.nvm/nvm.sh && nvm install ${node_version} && nvm alias default ${node_version}'",
     creates => "/home/vagrant/.nvm/${node_version}",
