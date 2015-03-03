@@ -90,12 +90,14 @@ class install_postgres {
     ensure => present,
     password => 'dev',
     createdb => true,
+    require   => Class['postgresql::server']
   }
 
   pg_user { 'test':
     ensure => present,
     password => 'test',
     createdb => true,
+    require   => Class['postgresql::server']
   }
 
   package { 'libpq-dev':
